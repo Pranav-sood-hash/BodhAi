@@ -4,26 +4,25 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import AIMentorChat from './components/AIMentorChat'
 
-// Pages
+// Auth Components
+import ProtectedRoute from './components/auth/ProtectedRoute'
+
+// Auth Pages
+import Login from './pages/auth/Login'
+import Signup from './pages/auth/Signup'
+import EmailVerification from './pages/auth/EmailVerification'
+import AvatarSelection from './pages/auth/AvatarSelection'
+
+// Protected Pages
 import Dashboard from './pages/Dashboard'
 import Learn from './pages/Learn'
 import Projects from './pages/Projects'
 import CodeAssistant from './pages/CodeAssistant'
 import ProductivityPlanner from './pages/ProductivityPlanner'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 
 import './styles/App.css'
-
-function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem('user'))
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
-  return children
-}
 
 function MainLayout({ children }) {
   return (
@@ -42,9 +41,13 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/email-verification" element={<EmailVerification />} />
+        <Route path="/avatar-selection" element={<AvatarSelection />} />
         
+        {/* Protected Application Routes */}
         <Route path="/" element={
           <ProtectedRoute>
             <MainLayout>
