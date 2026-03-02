@@ -17,34 +17,52 @@ const EmailVerification = () => {
     }
   }, [tempUser, navigate])
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
 
-    const storedOtp = localStorage.getItem('verificationOtp')
+    try {
+      const response = await fetch('http://localhost:5000/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: tempUser.email, otp }),
+      });
 
-    if (otp === storedOtp) {
-      setSuccess('Verification successful!')
-      // Future: Finalize user creation session step
-      // Remove OTP from storage but keep temp user for next step
-      localStorage.removeItem('verificationOtp')
-      
-      setTimeout(() => {
-        navigate('/avatar-selection')
-      }, 1000)
-    } else {
-      setError('Invalid code. Please try again.')
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Verification successful!')
+        setTimeout(() => {
+          navigate('/avatar-selection')
+        }, 1000)
+      } else {
+        setError(data.error || 'Invalid code. Please try again.')
+      }
+    } catch (err) {
+      setError('Connection to server failed. Please try again.')
     }
   }
 
-  const handleResendOtp = () => {
-    const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
-    localStorage.setItem('verificationOtp', newOtp)
-    console.log(`BodhAI NEW OTP Code for ${tempUser?.email}: ${newOtp}`)
-    setSuccess('A new verification code has been sent!')
+  const handleResendOtp = async () => {
     setError('')
-    setTimeout(() => setSuccess(''), 3000)
+    setSuccess('')
+    try {
+      const response = await fetch('http://localhost:5000/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: tempUser.email }),
+      });
+
+      if (response.ok) {
+        setSuccess('A new verification code has been sent!')
+        setTimeout(() => setSuccess(''), 5000)
+      } else {
+        setError('Failed to resend code. Please try again later.')
+      }
+    } catch (err) {
+      setError('Connection failed. Please try again.')
+    }
   }
 
   return (

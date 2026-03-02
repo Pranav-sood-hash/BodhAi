@@ -43,24 +43,33 @@ const Signup = () => {
       return
     }
 
-    // Signup Process (Future Integration: AWS Cognito)
-    try {
-      // 1. Generate 6-digit OTP
-      const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
+    // Signup Process
+    const handleProcess = async () => {
+      try {
+        // 1. Send OTP via backend API
+        const response = await fetch('http://localhost:5000/api/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
 
-      // 2. Store OTP and temp user data temporarily for verification
-      // In a real scenario, this would be sent via Amazon SES and stored on the server/Cognito
-      const tempUser = { name, email, password }
-      localStorage.setItem('tempUser', JSON.stringify(tempUser))
-      localStorage.setItem('verificationOtp', otpCode)
+        if (!response.ok) {
+          throw new Error('Failed to send verification code');
+        }
 
-      console.log(`BodhAI OTP Code for ${email}: ${otpCode}`)
-      
-      // 3. Redirect to Email Verification page
-      navigate('/email-verification')
-    } catch (err) {
-      setError('Failed to create account. Please try again.')
-    }
+        // 2. Store temp user data for final account creation after verification
+        const tempUser = { name, email, password };
+        localStorage.setItem('tempUser', JSON.stringify(tempUser));
+
+        // 3. Redirect to Email Verification page
+        navigate('/email-verification');
+      } catch (err) {
+        console.error('Signup error:', err);
+        setError('Failed to send verification email. Please check your credentials or try again later.');
+      }
+    };
+
+    handleProcess();
   }
 
   return (
