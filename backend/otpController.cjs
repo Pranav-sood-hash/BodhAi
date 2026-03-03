@@ -16,21 +16,22 @@ const sendOTP = async (req, res) => {
   }
 
   try {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
     const expires = Date.now() + 5 * 60 * 1000; // 5 minutes
 
     otpStore[email] = {
-      otp,
+      otp: generatedOtp,
       expires,
       attempts: 0,
     };
 
-    await sendOTPEmail(email, otp);
+    await sendOTPEmail(email, generatedOtp);
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
     console.error('Failed to send OTP email:', error);
     // Development-friendly: log the OTP if email sending fails, so testing can continue
-    console.log(`[DEVELOPMENT ONLY] OTP for ${email}: ${otp}`);
+    const logOtp = otpStore[email]?.otp || "N/A";
+    console.log(`[DEVELOPMENT ONLY] OTP for ${email}: ${logOtp}`);
 
     if (error.code === 'EAUTH') {
       return res.status(500).json({
