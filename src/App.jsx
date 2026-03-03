@@ -25,14 +25,16 @@ import Settings from './pages/Settings'
 import './styles/App.css'
 
 function MainLayout({ children }) {
+  const [isAiPanelOpen, setIsAiPanelOpen] = useState(false)
+
   return (
-    <div className="app">
+    <div className={`app ${isAiPanelOpen ? 'ai-panel-open' : ''}`}>
       <Sidebar />
       <main className="main-content">
-        <Header />
+        <Header onToggleAi={() => setIsAiPanelOpen(!isAiPanelOpen)} isAiPanelOpen={isAiPanelOpen} />
         {children}
       </main>
-      <AIMentorChat />
+      <AIMentorChat isOpen={isAiPanelOpen} onClose={() => setIsAiPanelOpen(false)} />
     </div>
   )
 }

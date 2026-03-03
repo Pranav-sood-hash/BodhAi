@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Bell, User } from 'lucide-react'
+import { Search, Bell, User, Sparkles } from 'lucide-react'
 
-function Header() {
+function Header({ onToggleAi, isAiPanelOpen }) {
   return (
     <header className="header">
       <div className="search-bar">
@@ -11,6 +11,13 @@ function Header() {
       </div>
 
       <div className="header-actions">
+        <button
+          className={`icon-btn ai-toggle-btn ${isAiPanelOpen ? 'active' : ''}`}
+          onClick={onToggleAi}
+          title="Toggle AI Mentor"
+        >
+          <Sparkles size={20} />
+        </button>
         <button className="icon-btn notification-btn">
           <Bell size={20} />
           <span className="notification-dot"></span>

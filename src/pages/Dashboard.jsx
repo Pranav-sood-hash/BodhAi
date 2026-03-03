@@ -1,5 +1,5 @@
-import React from 'react'
-import { Play, MessageCircle, FolderGit2, CheckCircle2, ArrowRight, Clock, Target } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Play, MessageCircle, FolderGit2, CheckCircle2, ArrowRight, Clock, Target, X, Send, Sparkles, Loader2 } from 'lucide-react'
 
 function DashboardCard({ title, icon: Icon, children, className = '', gradient = false }) {
   return (
@@ -15,6 +15,80 @@ function DashboardCard({ title, icon: Icon, children, className = '', gradient =
 
 function Dashboard() {
   const user = JSON.parse(localStorage.getItem('user')) || { name: 'Pranav' }
+
+  // AI Mentor Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [question, setQuestion] = useState('')
+  const [response, setResponse] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // History State
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem('dashboardAiHistory')
+      return saved ? JSON.parse(saved) : []
+    } catch (e) {
+      console.error('Error parsing dashboard AI history:', e)
+      return []
+    }
+  })
+
+  // Save history to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('dashboardAiHistory', JSON.stringify(history.slice(-3)))
+    } catch (e) {
+      console.error('Error saving dashboard AI history:', e)
+    }
+  }, [history])
+
+  const handleAskQuestion = async (e) => {
+    e.preventDefault()
+    if (!question.trim() || isLoading) return
+
+    setIsLoading(true)
+    setError('')
+    setResponse('')
+
+    try {
+      const res = await fetch('/api/ai/mentor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode: "learn",
+          user_input: question,
+          context: {
+            current_page: "dashboard",
+            user_level: "intermediate"
+          }
+        })
+      })
+
+      if (!res.ok) throw new Error('API request failed')
+
+      const data = await res.json()
+      const newResponse = data.reply
+
+      setResponse(newResponse)
+
+      // Update history: keep only last 3 interactions
+      const newInteraction = { question, reply: newResponse }
+      setHistory(prev => [newInteraction, ...prev].slice(0, 3))
+
+      setQuestion('')
+    } catch (err) {
+      console.error('Error asking AI mentor:', err)
+      setError('AI Mentor is temporarily unavailable.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const latestReply = history.length > 0 && history[0].reply ? history[0].reply : "Let me explain recursion with a simple example..."
+  const previewText = latestReply.length > 80 ? latestReply.substring(0, 80) + '...' : latestReply
 
   return (
     <div className="dashboard">
@@ -41,11 +115,11 @@ function Dashboard() {
           <div className="mentor-preview">
             <div className="mentor-avatar"><span>🤖</span></div>
             <div className="mentor-info">
-              <p className="last-message">"Let me explain recursion with a simple example..."</p>
-              <span className="timestamp">2 hours ago</span>
+              <p className="last-message">"{previewText}"</p>
+              <span className="timestamp">Recently</span>
             </div>
           </div>
-          <button className="action-btn secondary">Ask a Question <ArrowRight size={16} /></button>
+          <button className="action-btn secondary" onClick={() => setIsModalOpen(true)}>Ask a Question <ArrowRight size={16} /></button>
         </DashboardCard>
 
         <DashboardCard title="Current Project" icon={FolderGit2} className="project-card">
@@ -83,6 +157,64 @@ function Dashboard() {
           </div>
         </DashboardCard>
       </div>
+
+      {/* AI Mentor Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal-content auth-card" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="ai-title">
+                <div className="ai-avatar"><Sparkles size={16} /></div>
+                <h3>Ask AI Mentor</h3>
+              </div>
+              <button className="icon-btn" onClick={() => setIsModalOpen(false)}><X size={20} /></button>
+            </div>
+
+            <div className="modal-body">
+              {response && (
+                <div className="ai-response-container">
+                  <div className="message assistant">
+                    <div className="message-bubble">{response}</div>
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="error-message">
+                  {error}
+                </div>
+              )}
+
+              {isLoading && (
+                <div className="loading-container">
+                  <Loader2 className="animate-spin" size={24} />
+                  <span>Thinking...</span>
+                </div>
+              )}
+            </div>
+
+            <form className="modal-footer" onSubmit={handleAskQuestion}>
+              <div className="input-container">
+                <input
+                  type="text"
+                  value={question}
+                  onChange={e => setQuestion(e.target.value)}
+                  placeholder="Ask anything about your learning..."
+                  autoFocus
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  className={`send-btn ${question.trim() && !isLoading ? 'active' : ''}`}
+                  disabled={!question.trim() || isLoading}
+                >
+                  {isLoading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

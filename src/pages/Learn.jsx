@@ -60,9 +60,21 @@ function Learn() {
 
   return (
     <div className="page-container">
-      <header className="page-header">
-        <h1>Learning Roadmaps</h1>
-        <p>Explore AI-powered learning paths tailored for you</p>
+      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Learning Roadmaps</h1>
+          <p>Explore AI-powered learning paths tailored for you</p>
+        </div>
+        <button className="action-btn secondary" onClick={() => {
+          const input = prompt('What would you like to learn? (e.g., Python for Data Science, Advanced React)')
+          if (input) {
+            window.dispatchEvent(new CustomEvent('ai-mentor-query', {
+              detail: { user_input: input, mode: 'roadmap' }
+            }))
+          }
+        }}>
+          <Target size={18} style={{ marginRight: '8px' }} /> Generate Custom Roadmap
+        </button>
       </header>
       <div className="cards-grid">
         {roadmaps.map(roadmap => (

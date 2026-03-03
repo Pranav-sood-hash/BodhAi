@@ -1,30 +1,117 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { Send, Sparkles, MoreVertical, Bot } from 'lucide-react'
+import { Send, Sparkles, MoreVertical, Bot, X } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
-function AIMentorChat() {
-  const [messages, setMessages] = useState([
-    { id: 1, role: 'assistant', content: "Hello Pranav! I'm your AI learning mentor. How can I help you today?" }
-  ])
+function AIMentorChat({ isOpen, onClose }) {
+  const location = useLocation()
+
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('aiMentorHistory')
+      return saved ? JSON.parse(saved) : [
+        { id: 1, role: 'assistant', content: "Hello Pranav! I'm your AI learning mentor. How can I help you today?" }
+      ]
+    } catch (e) {
+      console.error('Error parsing AI mentor history:', e)
+      return [{ id: 1, role: 'assistant', content: "Hello Pranav! I'm your AI learning mentor. How can I help you today?" }]
+    }
+  })
+
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
 
-  const handleSend = () => {
+  // Save only last 5 interactions (user + assistant pairs)
+  useEffect(() => {
+    try {
+      // Each interaction is a pair of user and assistant messages
+      // Let's keep the last 10 messages (5 pairs) + the initial greeting
+      const messagesToSave = messages.slice(-11)
+      localStorage.setItem('aiMentorHistory', JSON.stringify(messagesToSave))
+    } catch (e) {
+      console.error('Error saving AI mentor history:', e)
+    }
+  }, [messages])
+
+  // Listen for external queries (from pages)
+  useEffect(() => {
+    const handleExternalQuery = (e) => {
+      const { user_input, mode } = e.detail
+      if (user_input) {
+        processAIRequest(user_input, mode)
+      }
+    }
+
+    window.addEventListener('ai-mentor-query', handleExternalQuery)
+    return () => window.removeEventListener('ai-mentor-query', handleExternalQuery)
+  }, [location.pathname]) // location.pathname dependency if context depends on it
+
+  const getModeFromPath = (path) => {
+    if (path.includes('learn')) return 'learn'
+    if (path.includes('code')) return 'code'
+    if (path.includes('productivity')) return 'productivity'
+    if (path.includes('projects')) return 'roadmap'
+    return 'learn'
+  }
+
+  const handleSend = async () => {
     if (!input.trim()) return
-    const userMessage = { id: Date.now(), role: 'user', content: input }
-    setMessages([...messages, userMessage])
+    const userInput = input
     setInput('')
+    await processAIRequest(userInput)
+  }
+
+  const processAIRequest = async (userInput, customMode = null) => {
+    const userMessage = { id: Date.now(), role: 'user', content: userInput }
+    setMessages(prev => [...prev, userMessage])
     setIsTyping(true)
-    setTimeout(() => {
+
+    const mode = customMode || getModeFromPath(location.pathname)
+    const context = {
+      user_level: 'beginner',
+      current_page: location.pathname.substring(1) || 'dashboard'
+    }
+
+    try {
+      const response = await fetch('/api/ai/mentor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode,
+          user_input: userInput,
+          context
+        })
+      })
+
+      const data = await response.json()
+
       setIsTyping(false)
-      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: "That's a great question! Let me help you understand this concept better." }])
-    }, 1500)
+      if (data.reply) {
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          role: 'assistant',
+          content: data.reply
+        }])
+      } else {
+        throw new Error('No reply from AI')
+      }
+    } catch (error) {
+      console.error('Error fetching AI response:', error)
+      setIsTyping(false)
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: "Sorry, I'm having trouble connecting right now. Please try again later."
+      }])
+    }
   }
 
   const quickQuestions = ['Explain recursion', 'Help with React hooks', 'Debug my code', 'Create study plan']
 
   return (
-    <aside className="ai-panel">
+    <aside className={`ai-panel ${isOpen ? 'show' : ''}`}>
       <div className="ai-panel-header">
         <div className="ai-title">
           <div className="ai-avatar"><Sparkles size={16} /></div>
@@ -33,7 +120,10 @@ function AIMentorChat() {
             <span className="status">● Online</span>
           </div>
         </div>
-        <button className="icon-btn"><MoreVertical size={18} /></button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="icon-btn mobile-only" onClick={onClose}><X size={18} /></button>
+          <button className="icon-btn"><MoreVertical size={18} /></button>
+        </div>
       </div>
 
       <div className="ai-panel-content">
@@ -54,7 +144,7 @@ function AIMentorChat() {
 
         <div className="quick-questions">
           {quickQuestions.map((q, i) => (
-            <button key={i} className="quick-question" onClick={() => setInput(q)}>{q}</button>
+            <button key={i} className="quick-question" onClick={() => processAIRequest(q)}>{q}</button>
           ))}
         </div>
       </div>

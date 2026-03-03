@@ -20,28 +20,45 @@ function CodeAssistant() {
       return
     }
 
-    const userMessage = { 
-      id: Date.now(), 
-      role: 'user', 
-      content: `${type}: \n\n\`\`\`javascript\n${code}\n\`\`\`` 
+    const userMessage = {
+      id: Date.now(),
+      role: 'user',
+      content: `${type}: \n\n\`\`\`javascript\n${code}\n\`\`\``
     }
-    
+
     setChatHistory(prev => [...prev, userMessage])
 
-    // Simulate AI response
-    setTimeout(() => {
-      let response = ''
-      if (type === 'Explain Code') {
-        response = "This code defines a function that calculates... It uses a loop to iterate through the data and returns the final result."
-      } else if (type === 'Fix Error') {
-        response = "I've identified an issue with your code! It looks like you're missing a closing bracket or a semicolon. Try adding it to fix the error."
-      } else if (type === 'Optimize Code') {
-        response = "Your code can be optimized! Instead of using a traditional loop, consider using the `.map()` or `.reduce()` methods for better performance and readability."
-      }
+    // Fetch from AI Mentor API
+    const fetchAIResponse = async () => {
+      try {
+        const response = await fetch('/api/ai/mentor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: 'code',
+            user_input: `${type} for this code: ${code}`,
+            context: {
+              user_level: 'beginner',
+              current_page: 'code-assistant'
+            }
+          })
+        })
 
-      const aiResponse = { id: Date.now() + 1, role: 'assistant', content: response }
-      setChatHistory(prev => [...prev, aiResponse])
-    }, 1000)
+        const data = await response.json()
+        if (data.reply) {
+          const aiResponse = { id: Date.now() + 1, role: 'assistant', content: data.reply }
+          setChatHistory(prev => [...prev, aiResponse])
+        }
+      } catch (error) {
+        console.error('Error fetching AI response:', error)
+        const errorResponse = { id: Date.now() + 1, role: 'assistant', content: "Sorry, I'm having trouble connecting to the AI Mentor. Please try again later." }
+        setChatHistory(prev => [...prev, errorResponse])
+      }
+    }
+
+    fetchAIResponse()
   }
 
   return (

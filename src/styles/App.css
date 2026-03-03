@@ -49,6 +49,20 @@ body {
 }
 
 /* Sidebar */
+.ai-toggle-btn {
+  display: none;
+}
+
+.ai-toggle-btn.active {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+@media (max-width: 1200px) {
+  .ai-toggle-btn {
+    display: flex;
+  }
+}
 .sidebar {
   background: rgba(26, 18, 37, 0.8);
   backdrop-filter: blur(10px);
@@ -540,6 +554,11 @@ body {
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-only {
+  display: none;
 }
 
 .ai-panel-header {
@@ -745,9 +764,24 @@ body {
   .app {
     grid-template-columns: 260px 1fr;
   }
-  
+
   .ai-panel {
-    display: none;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 380px;
+    height: 100vh;
+    z-index: 2000;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    background: #1a1225;
+  }
+
+  .ai-panel.show {
+    right: 0;
+  }
+
+  .mobile-only {
+    display: flex;
   }
 }
 
@@ -896,6 +930,82 @@ body {
   font-size: 16px;
   color: var(--text-primary);
   font-weight: 500;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 26, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
+  animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  min-height: 100px;
+  max-height: 400px;
+  padding-right: 8px;
+}
+
+.ai-response-container {
+  margin-bottom: 16px;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--accent-purple);
+  padding: 20px;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  text-align: center;
+  margin-bottom: 16px;
 }
 
 /* Scrollbar */
