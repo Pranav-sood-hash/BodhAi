@@ -54,7 +54,8 @@ const Signup = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to send verification code');
+          const data = await response.json();
+          throw new Error(data.error || 'Failed to send verification code');
         }
 
         // 2. Store temp user data for final account creation after verification
@@ -65,7 +66,7 @@ const Signup = () => {
         navigate('/email-verification');
       } catch (err) {
         console.error('Signup error:', err);
-        setError('Failed to send verification email. Please check your credentials or try again later.');
+        setError(err.message || 'Failed to send verification email. Please try again later.');
       }
     };
 

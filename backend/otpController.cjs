@@ -28,7 +28,15 @@ const sendOTP = async (req, res) => {
     await sendOTPEmail(email, otp);
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
-    console.error('Failed to send OTP:', error);
+    console.error('Failed to send OTP email:', error);
+    // Development-friendly: log the OTP if email sending fails, so testing can continue
+    console.log(`[DEVELOPMENT ONLY] OTP for ${email}: ${otp}`);
+
+    if (error.code === 'EAUTH') {
+      return res.status(500).json({
+        error: 'Email configuration error. Please ensure you have set valid EMAIL_USER and EMAIL_PASS (Gmail App Password) in your .env file. For development, you can check the server logs for the code.'
+      });
+    }
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
