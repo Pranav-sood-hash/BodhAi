@@ -6,6 +6,8 @@ const EmailVerification = () => {
   const [otp, setOtp] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isResending, setIsResending] = useState(false)
   const navigate = useNavigate()
   
   // 1. Get temp user data to show email (optional)
@@ -21,14 +23,20 @@ const EmailVerification = () => {
     e.preventDefault()
     setError('')
     setSuccess('')
+    setIsLoading(true)
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
       const response = await fetch('/api/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: tempUser.email, otp }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId)
       const contentType = response.headers.get('content-type');
 
       if (response.ok) {
@@ -47,24 +55,36 @@ const EmailVerification = () => {
         } else {
           const text = await response.text();
           console.error('Non-JSON error response:', text.substring(0, 200));
-          setError('Server error. Please check server logs.')
+          setError('Server error. Please check your connection.')
         }
       }
     } catch (err) {
-      setError('Connection to server failed. Please try again.')
+      if (err.name === 'AbortError') {
+        setError('Request timeout. Please try again.')
+      } else {
+        setError('Connection to server failed. Please try again.')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleResendOtp = async () => {
     setError('')
     setSuccess('')
+    setIsResending(true)
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
       const response = await fetch('/api/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: tempUser.email }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId)
       const contentType = response.headers.get('content-type');
 
       if (response.ok) {
@@ -79,7 +99,13 @@ const EmailVerification = () => {
         }
       }
     } catch (err) {
-      setError('Connection failed. Please try again.')
+      if (err.name === 'AbortError') {
+        setError('Request timeout. Please try again.')
+      } else {
+        setError('Connection failed. Please try again.')
+      }
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -148,26 +174,38 @@ const EmailVerification = () => {
             />
           </div>
 
-          <button type="submit" className="action-btn" style={{ width: '100%', marginTop: '1rem' }}>
-            Verify Code
+          <button
+            type="submit"
+            className="action-btn"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              marginTop: '1rem',
+              opacity: isLoading ? 0.6 : 1,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? 'Verifying...' : 'Verify Code'}
           </button>
         </form>
 
-        <button 
+        <button
           onClick={handleResendOtp}
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            color: 'var(--text-muted)', 
-            fontSize: '14px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            margin: '2rem auto 0', 
-            cursor: 'pointer' 
+          disabled={isResending}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: isResending ? 'rgba(113, 113, 122, 0.5)' : 'var(--text-muted)',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            margin: '2rem auto 0',
+            cursor: isResending ? 'not-allowed' : 'pointer',
+            opacity: isResending ? 0.6 : 1
           }}
         >
-          <RotateCcw size={16} /> Resend OTP
+          <RotateCcw size={16} /> {isResending ? 'Sending...' : 'Resend OTP'}
         </button>
       </div>
     </div>

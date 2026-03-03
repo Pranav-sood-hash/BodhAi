@@ -10,6 +10,7 @@ const Signup = () => {
     confirmPassword: ''
   })
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   const validateEmail = (email) => {
@@ -43,57 +44,32 @@ const Signup = () => {
       return
     }
 
-    // Signup Process
-    const handleProcess = async () => {
-      console.log('Starting signup process for:', email);
-      try {
-        // 1. Send OTP via backend API
-        const response = await fetch('/api/send-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        });
+    // Create account directly without email verification
+    setIsLoading(true)
 
-        console.log('Response status:', response.status);
-        const contentType = response.headers.get('content-type');
-        console.log('Response content-type:', contentType);
-
-        if (!response.ok) {
-          if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            throw new Error(data.error || 'Failed to send verification code');
-          } else {
-            const text = await response.text();
-            console.error('Non-JSON error response:', text.substring(0, 200));
-            // If we are in development, we can try to proceed even if the server returns HTML (e.g. proxy error)
-            // But usually this means the backend is down or unreachable.
-            throw new Error('Server error (HTML received). Please check if backend is running on port 5000.');
-          }
-        }
-
-        let data;
-        if (contentType && contentType.includes('application/json')) {
-          data = await response.json();
-        } else {
-          const text = await response.text();
-          console.error('Expected JSON but got:', text.substring(0, 200));
-          throw new Error('Invalid server response format');
-        }
-        console.log('OTP send response:', data);
-
-        // 2. Store temp user data for final account creation after verification
-        const tempUser = { name, email, password };
-        localStorage.setItem('tempUser', JSON.stringify(tempUser));
-
-        // 3. Redirect to Email Verification page
-        navigate('/email-verification');
-      } catch (err) {
-        console.error('Signup error:', err);
-        setError(err.message || 'Failed to send verification email. Please try again later.');
+    try {
+      // Create user object
+      const newUser = {
+        id: `user-${Date.now()}`,
+        name,
+        email,
+        password,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+        createdAt: new Date().toISOString(),
+        role: 'user'
       }
-    };
 
-    handleProcess();
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(newUser))
+
+      // Navigate to avatar selection for customization
+      navigate('/avatar-selection')
+    } catch (err) {
+      console.error('Signup error:', err)
+      setError('Failed to create account. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -178,8 +154,18 @@ const Signup = () => {
             />
           </div>
 
-          <button type="submit" className="action-btn" style={{ width: '100%', marginTop: '1rem' }}>
-            Create Account
+          <button
+            type="submit"
+            className="action-btn"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              marginTop: '1rem',
+              opacity: isLoading ? 0.6 : 1,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
