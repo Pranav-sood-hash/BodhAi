@@ -118,55 +118,33 @@ function CodeAssistant() {
         <p>Get instant explanations, debugging help, and optimizations</p>
       </header>
 
-      <div className="cards-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr', height: 'calc(100vh - 200px)' }}>
-        <div className="dashboard-card" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="code-assistant-grid">
+        <div className="dashboard-card editor-card">
           <div className="card-header">
             <Code2 size={20} />
             <h3>Editor</h3>
           </div>
-          <div className="card-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div className="card-content editor-content">
             {/* Mode and Language Selectors */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>Code Mode</label>
+            <div className="selectors-container">
+              <div className="selector-group">
+                <label className="selector-label">Code Mode</label>
                 <select
                   value={codeMode}
                   onChange={(e) => setCodeMode(e.target.value)}
-                  style={{
-                    width: '100%',
-                    background: 'rgba(139, 92, 246, 0.1)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '10px 12px',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
+                  className="selector-select"
                 >
                   <option value="Explain Code">Explain Code</option>
                   <option value="Debug Code">Debug Code</option>
                   <option value="Optimize Code">Optimize Code</option>
                 </select>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>Language</label>
+              <div className="selector-group">
+                <label className="selector-label">Language</label>
                 <select
                   value={codeLanguage}
                   onChange={(e) => setCodeLanguage(e.target.value)}
-                  style={{
-                    width: '100%',
-                    background: 'rgba(139, 92, 246, 0.1)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '10px 12px',
-                    color: 'var(--text-primary)',
-                    outline: 'none',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
+                  className="selector-select"
                 >
                   <option value="Python">Python</option>
                   <option value="JavaScript">JavaScript</option>
@@ -178,25 +156,12 @@ function CodeAssistant() {
             </div>
 
             <textarea
-              className="form-group"
-              style={{
-                flex: 1,
-                width: '100%',
-                background: 'rgba(30, 20, 50, 0.4)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
-                color: 'var(--text-primary)',
-                padding: '20px',
-                fontFamily: 'monospace',
-                resize: 'none',
-                outline: 'none',
-                marginBottom: '20px'
-              }}
+              className="code-textarea"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Paste your code here..."
             />
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="action-buttons">
               <button className="action-btn" onClick={handleAction}>
                 <MessageSquare size={16} /> Analyze
               </button>
@@ -207,22 +172,22 @@ function CodeAssistant() {
           </div>
         </div>
 
-        <div className="dashboard-card" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="dashboard-card response-card">
           <div className="card-header">
             <Sparkles size={20} />
             <h3>AI Response</h3>
           </div>
-          <div className="card-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div className="messages-container" style={{ flex: 1, overflowY: 'auto', marginBottom: '16px' }}>
+          <div className="card-content response-content">
+            <div className="messages-container assistant-messages">
               {chatHistory.map(msg => (
-                <div key={msg.id} className={`message ${msg.role === 'user' ? 'user' : 'assistant'}`} style={{ marginBottom: '16px' }}>
-                  <div className="message-bubble" style={{ fontSize: '14px', maxWidth: '100%' }}>
+                <div key={msg.id} className={`message ${msg.role === 'user' ? 'user' : 'assistant'}`}>
+                  <div className="message-bubble assistant-bubble">
                     {msg.content}
                   </div>
                 </div>
               ))}
             </div>
-            <button className="action-btn secondary" onClick={() => setChatHistory([])}>
+            <button className="action-btn secondary clear-history-btn" onClick={() => setChatHistory([])}>
               Clear History
             </button>
           </div>

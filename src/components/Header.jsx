@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Bell, User, Sparkles, X } from 'lucide-react'
+import { Search, Bell, User, Sparkles, X, Menu } from 'lucide-react'
 import { useNotifications } from '../context/NotificationContext'
 import { formatRelativeTime } from '../utils/timeFormatter'
 
-function Header({ onToggleAi, isAiPanelOpen }) {
+function Header({ onToggleAi, isAiPanelOpen, onToggleSidebar, isSidebarOpen }) {
   const { recentNotifications, unreadCount, markAsRead, markAllAsRead } = useNotifications()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -37,9 +37,18 @@ function Header({ onToggleAi, isAiPanelOpen }) {
 
   return (
     <header className="header">
-      <div className="search-bar">
-        <Search size={18} />
-        <input type="text" placeholder="Search courses, projects, or ask AI..." />
+      <div className="header-left">
+        <button
+          className="icon-btn mobile-only menu-toggle-btn"
+          onClick={onToggleSidebar}
+          title="Toggle Sidebar"
+        >
+          {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+        <div className="search-bar">
+          <Search size={18} />
+          <input type="text" placeholder="Search courses, projects, or ask AI..." />
+        </div>
       </div>
 
       <div className="header-actions">

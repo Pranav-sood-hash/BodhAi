@@ -177,46 +177,46 @@ function ProductivityPlanner() {
 
   return (
     <div className="page-container">
-      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
+      <header className="page-header planner-header">
+        <div className="header-text">
           <h1>Productivity Planner</h1>
           <p>Optimize your learning schedule and stay on track</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className="header-actions-planner">
           <button
-            className="action-btn secondary"
+            className="action-btn secondary ai-plan-btn"
             onClick={generateAiPlan}
             disabled={isAiLoading}
           >
             {isAiLoading ? (
-              <Loader2 size={18} className="animate-spin" style={{ marginRight: '8px' }} />
+              <Loader2 size={18} className="animate-spin loading-icon" />
             ) : (
-              <Sparkles size={18} style={{ marginRight: '8px' }} />
+              <Sparkles size={18} className="sparkles-icon" />
             )}
             AI Study Plan
           </button>
-          <button className="action-btn" onClick={() => setShowForm(!showForm)}>
+          <button className="action-btn add-task-btn" onClick={() => setShowForm(!showForm)}>
             <Plus size={20} /> {showForm ? 'Close' : 'Add Task'}
           </button>
         </div>
       </header>
 
-      <div className="cards-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="planner-grid">
         {/* Left Column: Stats & Add Task & AI Plan */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="dashboard-card gradient-border">
+        <div className="planner-left-col">
+          <div className="dashboard-card gradient-border stats-card">
             <div className="card-header">
               <Target size={20} />
               <h3>Daily Progress</h3>
             </div>
             <div className="card-content">
-              <div className="plan-progress" style={{ borderTop: 'none', paddingTop: 0 }}>
+              <div className="plan-progress stats-progress">
                 <span>{stats.completed} of {stats.total} tasks completed ({stats.rate}%)</span>
-                <div className="progress-bar small" style={{ width: '100%', margin: '12px 0' }}>
+                <div className="progress-bar small progress-bar-container">
                   <div className="progress" style={{ width: `${stats.rate}%` }}></div>
                 </div>
               </div>
-              <div className="project-stats">
+              <div className="project-stats stats-summary">
                 <div><Clock size={14} /><span>{stats.pending} pending</span></div>
                 <div><CheckCircle2 size={14} /><span>{stats.completed} done</span></div>
               </div>
@@ -224,19 +224,19 @@ function ProductivityPlanner() {
           </div>
 
           {aiPlan && (
-            <div className="dashboard-card ai-plan-card" style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
-              <div className="card-header" style={{ color: 'var(--accent-primary)' }}>
+            <div className="dashboard-card ai-plan-card planner-ai-card">
+              <div className="card-header ai-insight-header">
                 <Sparkles size={20} />
                 <h3>AI Adaptive Insights</h3>
               </div>
-              <div className="card-content ai-plan-content" style={{ whiteSpace: 'pre-wrap', fontSize: '0.9rem', lineHeight: '1.6' }}>
+              <div className="card-content ai-plan-content planner-ai-content">
                 {aiPlan}
               </div>
             </div>
           )}
 
           {showForm && (
-            <div className="auth-card" style={{ maxWidth: '100%' }}>
+            <div className="auth-card task-form-card">
               <h3>New Task</h3>
               <form onSubmit={handleAddTask}>
                 <div className="form-group">
@@ -249,7 +249,7 @@ function ProductivityPlanner() {
                     required
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-row">
                   <div className="form-group">
                     <label>Due Date</label>
                     <input
@@ -267,21 +267,13 @@ function ProductivityPlanner() {
                     />
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-row">
                   <div className="form-group">
                     <label>Priority</label>
                     <select
                       value={newTask.priority}
                       onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
-                      style={{
-                        width: '100%',
-                        background: 'rgba(139, 92, 246, 0.1)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '12px 16px',
-                        color: 'var(--text-primary)',
-                        outline: 'none'
-                      }}
+                      className="priority-select"
                     >
                       <option value="High">High</option>
                       <option value="Medium">Medium</option>
@@ -298,40 +290,40 @@ function ProductivityPlanner() {
                     />
                   </div>
                 </div>
-                <button type="submit" className="action-btn">Save Task</button>
+                <button type="submit" className="action-btn full-width">Save Task</button>
               </form>
             </div>
           )}
         </div>
 
         {/* Right Column: Task List */}
-        <div className="dashboard-card">
+        <div className="dashboard-card tasks-card">
           <div className="card-header">
             <CalendarCheck size={20} />
             <h3>To-Do List</h3>
           </div>
           <div className="card-content">
-            <div className="tasks-list" style={{ gap: '16px' }}>
+            <div className="tasks-list planner-tasks">
               {tasks.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px' }}>No tasks found. Add one to get started!</p>
+                <p className="no-tasks">No tasks found. Add one to get started!</p>
               ) : (
                 tasks.map(task => (
-                  <div key={task.id} className={`task-item ${task.completed ? 'done' : ''}`} style={{ justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, cursor: 'pointer' }} onClick={() => toggleTask(task.id)}>
+                  <div key={task.id} className={`task-item ${task.completed ? 'done' : ''} planner-task-item`}>
+                    <div className="task-item-content" onClick={() => toggleTask(task.id)}>
                       <div className={`checkbox ${task.completed ? 'checked' : ''}`}>
                         {task.completed && <CheckCircle2 size={16} color="white" />}
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <span style={{ display: 'block' }}>{task.taskTitle}</span>
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-                          <span className={`tag ${task.priority.toLowerCase()}`} style={{ fontSize: '10px', padding: '2px 6px' }}>{task.priority}</span>
-                          {task.dueDate && <span className="tag" style={{ fontSize: '10px', padding: '2px 6px' }}>{task.dueDate}</span>}
-                          {task.relatedTopic && <span className="tag" style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(139, 92, 246, 0.1)' }}>{task.relatedTopic}</span>}
-                          {task.estimatedTimeMinutes && <span className="tag" style={{ fontSize: '10px', padding: '2px 6px' }}><Clock size={10} style={{ marginRight: '2px' }} /> {task.estimatedTimeMinutes}m</span>}
+                      <div className="task-info-wrapper">
+                        <span className="task-title-text">{task.taskTitle}</span>
+                        <div className="task-tags-wrapper">
+                          <span className={`tag ${task.priority.toLowerCase()} priority-tag`}>{task.priority}</span>
+                          {task.dueDate && <span className="tag date-tag">{task.dueDate}</span>}
+                          {task.relatedTopic && <span className="tag topic-tag">{task.relatedTopic}</span>}
+                          {task.estimatedTimeMinutes && <span className="tag time-tag"><Clock size={10} className="tag-icon" /> {task.estimatedTimeMinutes}m</span>}
                         </div>
                       </div>
                     </div>
-                    <button className="icon-btn" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: '8px' }} onClick={() => deleteTask(task.id)}>
+                    <button className="icon-btn delete-task-btn" onClick={() => deleteTask(task.id)}>
                       <Trash2 size={16} />
                     </button>
                   </div>

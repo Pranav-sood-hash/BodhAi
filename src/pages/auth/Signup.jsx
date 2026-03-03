@@ -75,39 +75,31 @@ const Signup = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="logo-section" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
-          <div className="logo-icon" style={{ width: '50px', height: '50px' }}>
+        <div className="logo-section auth-logo-section">
+          <div className="logo-icon auth-logo-icon">
             <ShieldCheck size={32} />
           </div>
-          <span className="logo-text" style={{ fontSize: '28px' }}>BodhAI</span>
+          <span className="logo-text auth-logo-text">BodhAI</span>
         </div>
-        
-        <h2>Create Account</h2>
-        <p className="auth-footer" style={{ marginTop: '-1rem', marginBottom: '2rem' }}>
+
+        <h2 className="auth-title">Create Account</h2>
+        <p className="auth-subtitle">
           Join the AI-powered learning revolution
         </p>
 
         {error && (
-          <div style={{ 
-            padding: '12px', 
-            background: 'rgba(239, 68, 68, 0.15)', 
-            border: '1px solid rgba(239, 68, 68, 0.3)', 
-            borderRadius: 'var(--radius-md)', 
-            color: '#f87171', 
-            fontSize: '14px', 
-            marginBottom: '1.5rem' 
-          }}>
+          <div className="auth-error-message">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSignup}>
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <User size={16} /> Full Name
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Enter your name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -116,11 +108,11 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <Mail size={16} /> Email Address
             </label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               placeholder="yourname@email.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -129,11 +121,11 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <Lock size={16} /> Password
             </label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               placeholder="At least 8 characters"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -142,11 +134,11 @@ const Signup = () => {
           </div>
 
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <ShieldCheck size={16} /> Confirm Password
             </label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               placeholder="Confirm your password"
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -156,14 +148,8 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="action-btn"
+            className="action-btn auth-submit-btn"
             disabled={isLoading}
-            style={{
-              width: '100%',
-              marginTop: '1rem',
-              opacity: isLoading ? 0.6 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer'
-            }}
           >
             {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>

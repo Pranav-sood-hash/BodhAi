@@ -80,14 +80,14 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="logo-section" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
-          <div className="logo-icon" style={{ width: '50px', height: '50px' }}>
+        <div className="logo-section auth-logo-section">
+          <div className="logo-icon auth-logo-icon">
             <ShieldCheck size={32} />
           </div>
-          <span className="logo-text" style={{ fontSize: '28px' }}>BodhAI</span>
+          <span className="logo-text auth-logo-text">BodhAI</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className="login-type-toggle">
           <button
             type="button"
             onClick={() => {
@@ -95,18 +95,6 @@ const Login = () => {
               setError('')
             }}
             className={`login-type-btn ${!isAdminLogin ? 'active' : ''}`}
-            style={{
-              flex: 1,
-              padding: '10px 16px',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 500,
-              transition: 'all 0.2s',
-              background: !isAdminLogin ? 'var(--accent-purple)' : '#e5e7eb',
-              color: !isAdminLogin ? 'white' : '#374151'
-            }}
           >
             Student Login
           </button>
@@ -117,57 +105,32 @@ const Login = () => {
               setError('')
             }}
             className={`login-type-btn ${isAdminLogin ? 'active' : ''}`}
-            style={{
-              flex: 1,
-              padding: '10px 16px',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 500,
-              transition: 'all 0.2s',
-              background: isAdminLogin ? 'var(--accent-purple)' : '#e5e7eb',
-              color: isAdminLogin ? 'white' : '#374151',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px'
-            }}
           >
-            <Shield size={14} /> Admin
+            <Shield size={14} className="admin-icon" /> Admin
           </button>
         </div>
 
-        <h2 style={{ textAlign: 'center' }}>
+        <h2 className="auth-title">
           {isAdminLogin ? 'Admin Login' : 'Welcome Back'}
         </h2>
-        <p className="auth-footer" style={{ textAlign: 'center', marginTop: '-1rem', marginBottom: '2rem' }}>
+        <p className="auth-subtitle">
           {isAdminLogin ? 'Access admin dashboard' : 'Your AI-powered learning journey continues'}
         </p>
 
         {error && (
-          <div style={{ 
-            padding: '12px', 
-            background: 'rgba(239, 68, 68, 0.15)', 
-            border: '1px solid rgba(239, 68, 68, 0.3)', 
-            borderRadius: 'var(--radius-md)', 
-            color: '#f87171', 
-            fontSize: '14px', 
-            marginBottom: '1.5rem',
-            textAlign: 'center'
-          }}>
+          <div className="auth-error-message">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <Mail size={16} /> Email Address
             </label>
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
+            <input
+              type="email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -175,37 +138,28 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label className="form-label-with-icon">
               <Lock size={16} /> Password
             </label>
-            <input 
-              type="password" 
-              placeholder="Enter your password" 
+            <input
+              type="password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-            <Link to="/forgot-password" style={{ color: 'var(--accent-purple)', fontSize: '12px', textDecoration: 'none' }}>
+          <div className="forgot-password-link">
+            <Link to="/forgot-password">
               Forgot password?
             </Link>
           </div>
 
           <button
             type="submit"
-            className="action-btn"
+            className="action-btn auth-submit-btn"
             disabled={isLoading}
-            style={{
-              width: '100%',
-              marginTop: '1rem',
-              display: 'flex',
-              gap: '8px',
-              justifyContent: 'center',
-              opacity: isLoading ? 0.6 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer'
-            }}
           >
             {isLoading ? 'Signing in...' : isAdminLogin ? 'Admin Sign In' : 'Sign In'}
             {!isLoading && <ArrowRight size={18} />}

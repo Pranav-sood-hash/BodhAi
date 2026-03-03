@@ -152,41 +152,40 @@ function Settings() {
             <h3>Account Settings</h3>
           </div>
           <div className="card-content">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
-              <div style={{ position: 'relative' }}>
-                <img 
-                  src={user.avatar} 
-                  alt="Avatar" 
-                  style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-secondary)', border: '2px solid var(--accent-purple)' }} 
+            <div className="profile-edit-section">
+              <div className="avatar-wrapper">
+                <img
+                  src={user.avatar}
+                  alt="Avatar"
+                  className="settings-avatar"
                 />
-                <button 
+                <button
                   onClick={handleChangeAvatar}
-                  style={{ position: 'absolute', bottom: '0', right: '0', background: 'var(--accent-purple)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', color: 'white', display: 'flex', alignItems: 'center', justifyCenter: 'center', cursor: 'pointer' }}
+                  className="change-avatar-btn"
                   title="Change Avatar"
                 >
                   <Camera size={14} />
                 </button>
               </div>
-              <div style={{ flex: 1 }}>
+              <div className="user-details-edit">
                 {editMode ? (
-                  <form onSubmit={handleUpdateName} style={{ display: 'flex', gap: '10px' }}>
-                    <input 
-                      type="text" 
-                      className="form-group" 
-                      style={{ marginBottom: 0, padding: '8px 12px' }} 
-                      value={newName} 
+                  <form onSubmit={handleUpdateName} className="edit-name-form">
+                    <input
+                      type="text"
+                      className="form-group edit-name-input"
+                      value={newName}
                       onChange={(e) => setNewName(e.target.value)}
                       autoFocus
                     />
-                    <button type="submit" className="action-btn" style={{ padding: '8px 16px' }}>Save</button>
+                    <button type="submit" className="action-btn save-name-btn">Save</button>
                   </form>
                 ) : (
-                  <div>
-                    <h4 style={{ fontSize: '18px', fontWeight: '600' }}>{user.name}</h4>
-                    <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{user.email}</p>
-                    <button 
-                      onClick={() => setEditMode(true)} 
-                      style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', cursor: 'pointer', fontSize: '13px', padding: '4px 0', marginTop: '4px' }}
+                  <div className="user-name-display">
+                    <h4 className="user-name-text">{user.name}</h4>
+                    <p className="user-email-text">{user.email}</p>
+                    <button
+                      onClick={() => setEditMode(true)}
+                      className="edit-name-trigger"
                     >
                       Edit Name
                     </button>
@@ -239,12 +238,12 @@ function Settings() {
                   required 
                 />
               </div>
-              {passwordMsg && <p style={{ color: '#4ade80', fontSize: '13px', marginBottom: '12px' }}>{passwordMsg}</p>}
-              <div style={{ display: 'flex', gap: '12px' }}>
+              {passwordMsg && <p className="success-message">{passwordMsg}</p>}
+              <div className="security-actions">
                 <button type="submit" className="action-btn">Update Password</button>
-                <button 
-                  type="button" 
-                  className="action-btn secondary" 
+                <button
+                  type="button"
+                  className="action-btn secondary"
                   onClick={() => setShowResetForm(!showResetForm)}
                 >
                   Forgot Password?
@@ -253,20 +252,20 @@ function Settings() {
             </form>
 
             {showResetForm && (
-              <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(139, 92, 246, 0.05)', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-color)' }}>
-                <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>Reset via Email</h4>
+              <div className="reset-password-section">
+                <h4 className="reset-title">Reset via Email</h4>
                 <form onSubmit={handleResetPassword}>
                   <div className="form-group">
-                    <input 
-                      type="email" 
-                      placeholder="Enter your email" 
-                      value={resetEmail} 
-                      onChange={(e) => setResetEmail(e.target.value)} 
-                      required 
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      required
                     />
                   </div>
-                  <button type="submit" className="action-btn secondary" style={{ width: '100%' }}>
-                    <Mail size={16} style={{ marginRight: '8px' }} /> Send Reset Link
+                  <button type="submit" className="action-btn secondary full-width-btn">
+                    <Mail size={16} className="btn-icon" /> Send Reset Link
                   </button>
                 </form>
               </div>
@@ -281,61 +280,59 @@ function Settings() {
             <h3>Preferences</h3>
           </div>
           <div className="card-content">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: '500' }}>Email Notifications</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Receive updates about your progress</p>
+            <div className="preferences-list">
+              <div className="preference-item">
+                <div className="preference-info">
+                  <h4 className="preference-title">Email Notifications</h4>
+                  <p className="preference-desc">Receive updates about your progress</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  checked={settings.emailNotifications} 
+                <input
+                  type="checkbox"
+                  checked={settings.emailNotifications}
                   onChange={() => toggleSetting('emailNotifications')}
-                  style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--accent-purple)' }}
+                  className="preference-checkbox"
                 />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: '500' }}>Learning Reminders</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Daily nudges to stay on track</p>
+              <div className="preference-item">
+                <div className="preference-info">
+                  <h4 className="preference-title">Learning Reminders</h4>
+                  <p className="preference-desc">Daily nudges to stay on track</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  checked={settings.reminders} 
+                <input
+                  type="checkbox"
+                  checked={settings.reminders}
                   onChange={() => toggleSetting('reminders')}
-                  style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--accent-purple)' }}
+                  className="preference-checkbox"
                 />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: '500' }}>AI Mentor Suggestions</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Smart tips based on your behavior</p>
+              <div className="preference-item">
+                <div className="preference-info">
+                  <h4 className="preference-title">AI Mentor Suggestions</h4>
+                  <p className="preference-desc">Smart tips based on your behavior</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  checked={settings.aiSuggestions} 
+                <input
+                  type="checkbox"
+                  checked={settings.aiSuggestions}
                   onChange={() => toggleSetting('aiSuggestions')}
-                  style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--accent-purple)' }}
+                  className="preference-checkbox"
                 />
               </div>
             </div>
 
-            <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
-              <h4 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '12px' }}>Theme Mode</h4>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
-                  className={`action-btn ${theme === 'dark' ? '' : 'secondary'}`} 
-                  style={{ flex: 1 }}
+            <div className="theme-settings">
+              <h4 className="theme-title">Theme Mode</h4>
+              <div className="theme-options">
+                <button
+                  className={`action-btn ${theme === 'dark' ? '' : 'secondary'} theme-btn`}
                   onClick={() => setTheme('dark')}
                 >
-                  <Moon size={16} style={{ marginRight: '8px' }} /> Dark
+                  <Moon size={16} className="btn-icon" /> Dark
                 </button>
-                <button 
-                  className={`action-btn ${theme === 'light' ? '' : 'secondary'}`} 
-                  style={{ flex: 1 }}
+                <button
+                  className={`action-btn ${theme === 'light' ? '' : 'secondary'} theme-btn`}
                   onClick={() => setTheme('light')}
                 >
-                  <Sun size={16} style={{ marginRight: '8px' }} /> Light
+                  <Sun size={16} className="btn-icon" /> Light
                 </button>
               </div>
             </div>
@@ -349,26 +346,26 @@ function Settings() {
             <h3>Data & Privacy</h3>
           </div>
           <div className="card-content">
-            <div style={{ marginBottom: '24px' }}>
-              <h4 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '12px' }}>Export or Clear Data</h4>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="action-btn secondary" style={{ flex: 1 }} onClick={handleExportData}>
-                  <Download size={16} style={{ marginRight: '8px' }} /> Export JSON
+            <div className="data-management-section">
+              <h4 className="data-title">Export or Clear Data</h4>
+              <div className="data-actions">
+                <button className="action-btn secondary data-btn" onClick={handleExportData}>
+                  <Download size={16} className="btn-icon" /> Export JSON
                 </button>
-                <button className="action-btn secondary" style={{ flex: 1, color: '#f87171' }} onClick={handleClearData}>
-                  <Trash2 size={16} style={{ marginRight: '8px' }} /> Clear All
+                <button className="action-btn secondary data-btn danger-text" onClick={handleClearData}>
+                  <Trash2 size={16} className="btn-icon" /> Clear All
                 </button>
               </div>
             </div>
 
-            <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
-              <h4 style={{ fontSize: '14px', fontWeight: '500', marginBottom: '12px' }}>Account Management</h4>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="action-btn" style={{ flex: 1, background: 'rgba(244, 114, 182, 0.2)', color: 'white', border: '1px solid rgba(244, 114, 182, 0.3)' }} onClick={handleLogout}>
-                  <LogOut size={16} style={{ marginRight: '8px' }} /> Logout
+            <div className="account-actions-section">
+              <h4 className="account-title">Account Management</h4>
+              <div className="account-actions">
+                <button className="action-btn logout-btn" onClick={handleLogout}>
+                  <LogOut size={16} className="btn-icon" /> Logout
                 </button>
-                <button className="action-btn" style={{ flex: 1, background: 'rgba(239, 68, 68, 0.2)', color: 'white', border: '1px solid rgba(239, 68, 68, 0.3)' }} onClick={handleDeleteAccount}>
-                  <Shield size={16} style={{ marginRight: '8px' }} /> Delete
+                <button className="action-btn delete-btn" onClick={handleDeleteAccount}>
+                  <Shield size={16} className="btn-icon" /> Delete
                 </button>
               </div>
             </div>

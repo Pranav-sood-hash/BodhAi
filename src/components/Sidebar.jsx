@@ -8,6 +8,7 @@ import {
   CalendarCheck,
   Settings,
   Brain,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -23,46 +24,56 @@ const navItems = [
   },
 ];
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }) {
   return (
-    <aside className="sidebar">
-      <div className="logo-section">
-        <div className="logo-icon">
-          <Link to="/">
-            <Brain size={32} />
-          </Link>
+    <>
+      {isOpen && (
+        <div className="sidebar-overlay mobile-only" onClick={onClose} />
+      )}
+      <aside className={`sidebar ${isOpen ? "open" : ""}`}>
+        <div className="logo-section">
+          <div className="logo-icon">
+            <Link to="/" onClick={onClose}>
+              <Brain size={32} />
+            </Link>
+          </div>
+          <span className="logo-text">BodhAI</span>
+          <button className="icon-btn mobile-only close-sidebar" onClick={onClose}>
+            <X size={20} />
+          </button>
         </div>
-        <span className="logo-text">BodhAI</span>
-      </div>
 
-      <nav className="nav-menu">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-item ${isActive ? "active" : ""}`
-              }
-            >
-              <Icon size={20} />
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
+        <nav className="nav-menu">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.id}
+                to={item.path}
+                className={({ isActive }) =>
+                  `nav-item ${isActive ? "active" : ""}`
+                }
+                onClick={onClose}
+              >
+                <Icon size={20} />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
 
-      <div className="sidebar-footer">
-        <NavLink
-          to="/settings"
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-        >
-          <Settings size={20} />
-          <span>Settings</span>
-        </NavLink>
-      </div>
-    </aside>
+        <div className="sidebar-footer">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+            onClick={onClose}
+          >
+            <Settings size={20} />
+            <span>Settings</span>
+          </NavLink>
+        </div>
+      </aside>
+    </>
   );
 }
 
