@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Search, Bell, User } from 'lucide-react'
 
 function Header() {
@@ -14,9 +15,9 @@ function Header() {
           <Bell size={20} />
           <span className="notification-dot"></span>
         </button>
-        <button className="user-avatar">
+        <Link to="/profile" className="user-avatar">
           <User size={20} />
-        </button>
+        </Link>
       </div>
     </header>
   )

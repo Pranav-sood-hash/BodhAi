@@ -14,10 +14,12 @@ function DashboardCard({ title, icon: Icon, children, className = '', gradient =
 }
 
 function Dashboard() {
+  const user = JSON.parse(localStorage.getItem('user')) || { name: 'Pranav' }
+
   return (
     <div className="dashboard">
       <div className="welcome-section">
-        <h1>Welcome back, Pranav!</h1>
+        <h1>Welcome back, {user.name}!</h1>
         <p>Ready to continue your learning journey?</p>
       </div>
 

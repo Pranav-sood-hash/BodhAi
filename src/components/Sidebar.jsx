@@ -1,15 +1,16 @@
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, BookOpen, FolderKanban, Code2, CalendarCheck, Settings, Brain } from 'lucide-react'
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'learn', label: 'Learn', icon: BookOpen },
-  { id: 'projects', label: 'Projects', icon: FolderKanban },
-  { id: 'code', label: 'Code Assistant', icon: Code2 },
-  { id: 'planner', label: 'Productivity Planner', icon: CalendarCheck },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+  { id: 'learn', label: 'Learn', icon: BookOpen, path: '/learn' },
+  { id: 'projects', label: 'Projects', icon: FolderKanban, path: '/projects' },
+  { id: 'code', label: 'Code Assistant', icon: Code2, path: '/code-assistant' },
+  { id: 'planner', label: 'Productivity Planner', icon: CalendarCheck, path: '/productivity' },
 ]
 
-function Sidebar({ activeTab, setActiveTab }) {
+function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="logo-section">
@@ -22,25 +23,27 @@ function Sidebar({ activeTab, setActiveTab }) {
       <nav className="nav-menu">
         {navItems.map((item) => {
           const Icon = item.icon
-          const isActive = activeTab === item.id
           return (
-            <button
+            <NavLink
               key={item.id}
-              className={`nav-item ${isActive ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}
+              to={item.path}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
               <Icon size={20} />
               <span>{item.label}</span>
-            </button>
+            </NavLink>
           )
         })}
       </nav>
 
       <div className="sidebar-footer">
-        <button className="nav-item">
+        <NavLink 
+          to="/settings" 
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
           <Settings size={20} />
           <span>Settings</span>
-        </button>
+        </NavLink>
       </div>
     </aside>
   )
