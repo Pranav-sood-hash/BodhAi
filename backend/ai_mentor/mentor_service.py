@@ -57,7 +57,7 @@ For a {user_level}-level developer, I've reviewed your code and identified the f
 
 # Improved or explained version of your code would go here
 # This demonstrates best practices for {language}
-```
+
 
 ### 🚀 Improvement Notes
 Based on your {user_level} skill level in {language}:
@@ -65,6 +65,30 @@ Based on your {user_level} skill level in {language}:
 - These changes will enhance performance
 - This follows {language} best practices
 - You can apply these patterns to similar problems in the future"""
+        elif mode == "productivity":
+            # For Productivity mode, return adaptive structured response
+            completion_rate = context.get('completion_rate', 0)
+            topic = context.get('current_topic', 'Software Development')
+
+            if completion_rate < 40:
+                difficulty = "foundational"
+                advice = "Don't worry about the pace. Let's focus on small, consistent wins today to build your momentum."
+            elif completion_rate > 70:
+                difficulty = "advanced"
+                advice = "You're on fire! Let's push your limits with some advanced challenges today."
+            else:
+                difficulty = "balanced"
+                advice = "Great steady progress. Keep this rhythm going to stay on track with your goals."
+
+            reply = f"""### 📅 Smart Plan
+
+1. Review {topic} {difficulty} concepts (20m)
+2. Practice one core {topic} exercise (45m)
+3. Document your learning and plan next steps (15m)
+
+### 🎯 Focus Advice
+
+{advice}"""
         else:
             # Keep existing mock responses for other modes
             mock_replies = {

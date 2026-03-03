@@ -149,6 +149,56 @@ Keep your response structured, clear, and mentor-like."""
         return prompt
 
     @staticmethod
+    def build_productivity_prompt(user_input, context):
+        """
+        Build a structured prompt for Productivity mode.
+        """
+        learning_track = context.get('learning_track', 'Backend Development')
+        current_topic = context.get('current_topic', 'Software Development')
+        completed_tasks = context.get('completed_tasks', [])
+        pending_tasks = context.get('pending_tasks', [])
+        completion_rate = context.get('completion_rate', 0)
+
+        # Difficulty adjustment logic (handled via instructions in the prompt)
+        difficulty_instruction = ""
+        if completion_rate < 40:
+            difficulty_instruction = "The user is struggling. Suggest LIGHTER, more manageable tasks to build momentum."
+        elif completion_rate > 70:
+            difficulty_instruction = "The user is doing great! Suggest ADVANCED, more challenging tasks to push their limits."
+        else:
+            difficulty_instruction = "Suggest BALANCED tasks appropriate for their current pace."
+
+        prompt = f"""You are BodhAI — an intelligent productivity mentor.
+
+User Context:
+Track: {learning_track}
+Current Topic: {current_topic}
+Completed Tasks: {', '.join(completed_tasks) if completed_tasks else 'None'}
+Pending Tasks: {', '.join(pending_tasks) if pending_tasks else 'None'}
+Completion Rate: {completion_rate}%
+
+Instructions:
+1. Suggest 3 prioritized tasks.
+2. Estimate time required for each.
+3. {difficulty_instruction}
+4. Avoid overwhelming the user.
+5. Encourage consistency.
+
+Response Format:
+
+### 📅 Smart Plan
+
+1. Task Name (Estimated Time)
+2. Task Name (Estimated Time)
+3. Task Name (Estimated Time)
+
+### 🎯 Focus Advice
+
+Short motivational advice.
+"""
+        return prompt
+
+    @staticmethod
     def build_prompt(mode, user_input, context):
         """
         Main prompt builder that routes to appropriate builders based on mode.
@@ -171,12 +221,6 @@ Keep your response structured, clear, and mentor-like."""
                 User Query: {user_input}
             """
         elif mode == 'productivity':
-            return f"""
-                You are an expert Productivity Coach.
-                Mode: Study Planning
-                Context: User is on {current_page} page and is a {user_level} level learner.
-                Task: Create a time-based study plan or schedule based on the input.
-                User Query: {user_input}
-            """
+            return PromptBuilder.build_productivity_prompt(user_input, context)
         else:
             return f"Context: {context}. User Query: {user_input}"
