@@ -20,13 +20,13 @@ const AvatarSelection = () => {
   const canvasRef = useRef(null)
   const navigate = useNavigate()
 
-  // Verify that a temp user session exists
-  const tempUser = JSON.parse(localStorage.getItem('tempUser'))
+  // Verify that a user session exists
+  const currentUser = JSON.parse(localStorage.getItem('user'))
   useEffect(() => {
-    if (!tempUser) {
+    if (!currentUser) {
       navigate('/signup')
     }
-  }, [tempUser, navigate])
+  }, [currentUser, navigate])
 
   const handleSelectAvatar = (avatar) => {
     setSelectedAvatar(`https://api.dicebear.com/7.x/bottts/svg?seed=${avatar.seed}`)
@@ -74,19 +74,17 @@ const AvatarSelection = () => {
   }
 
   const handleFinalize = () => {
-    const finalAvatar = uploadedImage || selectedAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${tempUser?.name}`
-    
-    // 3. Create final user object and finalize registration
-    const finalUser = {
-      ...tempUser,
-      avatar: finalAvatar,
-      createdAt: new Date().toISOString()
+    const finalAvatar = uploadedImage || selectedAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.name}`
+
+    // Update user with selected avatar
+    const updatedUser = {
+      ...currentUser,
+      avatar: finalAvatar
     }
 
-    localStorage.setItem('user', JSON.stringify(finalUser))
-    localStorage.removeItem('tempUser') // Clear temp data after registration
-    
-    // Future Integration: Save final data to backend / AWS Cognito
+    localStorage.setItem('user', JSON.stringify(updatedUser))
+
+    // Navigate to dashboard
     navigate('/')
   }
 

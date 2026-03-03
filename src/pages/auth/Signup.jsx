@@ -44,67 +44,32 @@ const Signup = () => {
       return
     }
 
-    // Signup Process
-    const handleProcess = async () => {
-      setIsLoading(true);
-      console.log('Starting signup process for:', email);
-      try {
-        // 1. Send OTP via backend API with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    // Create account directly without email verification
+    setIsLoading(true)
 
-        const response = await fetch('/api/send-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-        console.log('Response status:', response.status);
-        const contentType = response.headers.get('content-type');
-        console.log('Response content-type:', contentType);
-
-        if (!response.ok) {
-          if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            throw new Error(data.error || 'Failed to send verification code');
-          } else {
-            const text = await response.text();
-            console.error('Non-JSON error response:', text.substring(0, 200));
-            throw new Error('Server error. Please check your connection and try again.');
-          }
-        }
-
-        let data;
-        if (contentType && contentType.includes('application/json')) {
-          data = await response.json();
-        } else {
-          const text = await response.text();
-          console.error('Expected JSON but got:', text.substring(0, 200));
-          throw new Error('Invalid server response format');
-        }
-        console.log('OTP send response:', data);
-
-        // 2. Store temp user data for final account creation after verification
-        const tempUser = { name, email, password };
-        localStorage.setItem('tempUser', JSON.stringify(tempUser));
-
-        // 3. Redirect to Email Verification page
-        navigate('/email-verification');
-      } catch (err) {
-        console.error('Signup error:', err);
-        if (err.name === 'AbortError') {
-          setError('Request timeout. Please check your connection and try again.');
-        } else {
-          setError(err.message || 'Failed to send verification email. Please try again later.');
-        }
-      } finally {
-        setIsLoading(false);
+    try {
+      // Create user object
+      const newUser = {
+        id: `user-${Date.now()}`,
+        name,
+        email,
+        password,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+        createdAt: new Date().toISOString(),
+        role: 'user'
       }
-    };
 
-    handleProcess();
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(newUser))
+
+      // Navigate to avatar selection for customization
+      navigate('/avatar-selection')
+    } catch (err) {
+      console.error('Signup error:', err)
+      setError('Failed to create account. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
