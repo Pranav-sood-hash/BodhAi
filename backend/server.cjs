@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { sendOTP, verifyOTP } = require('./otpController.cjs');
+const { adminLogin } = require('./adminController.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 // API Endpoints
 app.post('/api/send-otp', sendOTP);
 app.post('/api/verify-otp', verifyOTP);
+app.post('/api/admin-login', adminLogin);
 
 // Simple health check
 app.get('/health', (req, res) => {
