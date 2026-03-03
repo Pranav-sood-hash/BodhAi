@@ -10,6 +10,7 @@ const Signup = () => {
     confirmPassword: ''
   })
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   const validateEmail = (email) => {
@@ -45,15 +46,21 @@ const Signup = () => {
 
     // Signup Process
     const handleProcess = async () => {
+      setIsLoading(true);
       console.log('Starting signup process for:', email);
       try {
-        // 1. Send OTP via backend API
+        // 1. Send OTP via backend API with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         const response = await fetch('/api/send-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
         console.log('Response status:', response.status);
         const contentType = response.headers.get('content-type');
         console.log('Response content-type:', contentType);
@@ -65,9 +72,7 @@ const Signup = () => {
           } else {
             const text = await response.text();
             console.error('Non-JSON error response:', text.substring(0, 200));
-            // If we are in development, we can try to proceed even if the server returns HTML (e.g. proxy error)
-            // But usually this means the backend is down or unreachable.
-            throw new Error('Server error (HTML received). Please check if backend is running on port 5000.');
+            throw new Error('Server error. Please check your connection and try again.');
           }
         }
 
@@ -89,7 +94,13 @@ const Signup = () => {
         navigate('/email-verification');
       } catch (err) {
         console.error('Signup error:', err);
-        setError(err.message || 'Failed to send verification email. Please try again later.');
+        if (err.name === 'AbortError') {
+          setError('Request timeout. Please check your connection and try again.');
+        } else {
+          setError(err.message || 'Failed to send verification email. Please try again later.');
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -178,8 +189,18 @@ const Signup = () => {
             />
           </div>
 
-          <button type="submit" className="action-btn" style={{ width: '100%', marginTop: '1rem' }}>
-            Create Account
+          <button
+            type="submit"
+            className="action-btn"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              marginTop: '1rem',
+              opacity: isLoading ? 0.6 : 1,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
