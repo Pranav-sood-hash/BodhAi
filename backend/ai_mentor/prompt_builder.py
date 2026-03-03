@@ -1,5 +1,76 @@
 class PromptBuilder:
     @staticmethod
+    def build_code_prompt(user_input, context):
+        """
+        Build a structured prompt for Code Assistant mode.
+
+        Args:
+            user_input: The code to analyze
+            context: Dictionary containing code analysis parameters
+
+        Returns:
+            A structured prompt for code analysis
+        """
+        # Extract context with safe defaults
+        code_mode = context.get('code_mode', 'Explain Code')
+        language = context.get('language', 'Python')
+        user_level = context.get('user_level', 'beginner')
+        current_track = context.get('current_track', 'backend')
+
+        # Build mode-specific instructions
+        mode_instructions = {
+            'Explain Code': """* Explain the logic step-by-step
+   * Identify key functions and their purposes
+   * Explain time/space complexity if relevant
+   * Note any design patterns used""",
+            'Debug Code': """* Identify logical and syntax errors
+   * Explain why each error occurs
+   * Provide a corrected version of the code
+   * Explain the fix clearly""",
+            'Optimize Code': """* Suggest performance improvements
+   * Suggest readability and maintainability improvements
+   * Provide an optimized version of the code
+   * Explain the trade-offs of your suggestions"""
+        }
+
+        instructions = mode_instructions.get(code_mode, mode_instructions['Explain Code'])
+
+        # Build the dynamic prompt
+        prompt = f"""You are BodhAI — an expert software engineering mentor specializing in code analysis.
+
+User Profile:
+- Skill Level: {user_level}
+- Programming Language: {language}
+- Learning Track: {current_track}
+- Task Type: {code_mode}
+
+Code Provided:
+
+{user_input}
+
+
+Instructions for {code_mode}:
+
+{instructions}
+
+Response Format:
+
+Please structure your response exactly as follows (use these headers):
+
+### 🔍 Analysis
+Provide a thorough analysis of the code.
+
+### 🛠 Suggested Fix / Explanation
+Provide the suggested changes or explanation.
+
+### 🚀 Improvement Notes
+Provide additional insights and recommendations.
+
+Keep your response structured, clear, and mentor-like. Tailor the complexity level to a {user_level} developer."""
+
+        return prompt
+
+    @staticmethod
     def build_learn_prompt(user_input, context):
         """
         Build a dynamic, context-aware prompt for Learn mode.
@@ -89,13 +160,8 @@ Keep your response structured, clear, and mentor-like."""
             # Use the new dynamic learn prompt builder
             return PromptBuilder.build_learn_prompt(user_input, context)
         elif mode == 'code':
-            return f"""
-                You are an expert AI Code Assistant.
-                Mode: Code Analysis
-                Context: User is on {current_page} page and is a {user_level} level learner.
-                Task: Analyze the following code or error, explain it, and suggest a fix.
-                User Query: {user_input}
-            """
+            # Use the new structured code prompt builder
+            return PromptBuilder.build_code_prompt(user_input, context)
         elif mode == 'roadmap':
             return f"""
                 You are an expert AI Career Coach.

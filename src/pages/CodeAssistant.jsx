@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { Sparkles, Code2, Play, Bug, MessageSquare, Send } from 'lucide-react'
+import { useNotifications } from '../context/NotificationContext'
 
 function CodeAssistant() {
+  const { addNotification } = useNotifications()
+
   const [code, setCode] = useState('')
+  const [codeMode, setCodeMode] = useState('Explain Code')
+  const [codeLanguage, setCodeLanguage] = useState('Python')
+  const [userLevel, setUserLevel] = useState('beginner')
+  const [userTrack, setUserTrack] = useState('backend')
+
   const [chatHistory, setChatHistory] = useState(() => {
     const saved = localStorage.getItem('aiChatHistory')
     return saved ? JSON.parse(saved) : [
@@ -10,25 +18,42 @@ function CodeAssistant() {
     ]
   })
 
+  const [codeAssistantHistory, setCodeAssistantHistory] = useState(() => {
+    const saved = localStorage.getItem('codeAssistantHistory')
+    return saved ? JSON.parse(saved) : []
+  })
+
   useEffect(() => {
     localStorage.setItem('aiChatHistory', JSON.stringify(chatHistory))
   }, [chatHistory])
 
-  const handleAction = (type) => {
+  useEffect(() => {
+    // Keep only last 5 interactions
+    const recentHistory = codeAssistantHistory.slice(0, 5)
+    localStorage.setItem('codeAssistantHistory', JSON.stringify(recentHistory))
+  }, [codeAssistantHistory])
+
+  const handleAction = () => {
+    // Error handling for empty code
     if (!code.trim()) {
-      alert('Please paste some code first!')
+      const errorMessage = {
+        id: Date.now(),
+        role: 'assistant',
+        content: "Please provide code to analyze."
+      }
+      setChatHistory(prev => [...prev, errorMessage])
       return
     }
 
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: `${type}: \n\n\`\`\`javascript\n${code}\n\`\`\``
+      content: `[${codeMode}] [${codeLanguage}]\n\n\`\`\`${codeLanguage.toLowerCase()}\n${code}\n\`\`\``
     }
 
     setChatHistory(prev => [...prev, userMessage])
 
-    // Fetch from AI Mentor API
+    // Fetch from AI Mentor API with structured context
     const fetchAIResponse = async () => {
       try {
         const response = await fetch('/api/ai/mentor', {
@@ -38,9 +63,12 @@ function CodeAssistant() {
           },
           body: JSON.stringify({
             mode: 'code',
-            user_input: `${type} for this code: ${code}`,
+            user_input: code,
             context: {
-              user_level: 'beginner',
+              code_mode: codeMode,
+              language: codeLanguage,
+              user_level: userLevel,
+              current_track: userTrack,
               current_page: 'code-assistant'
             }
           })
@@ -50,10 +78,32 @@ function CodeAssistant() {
         if (data.reply) {
           const aiResponse = { id: Date.now() + 1, role: 'assistant', content: data.reply }
           setChatHistory(prev => [...prev, aiResponse])
+
+          // Save to codeAssistantHistory (last 5 interactions)
+          const historyEntry = {
+            id: Date.now(),
+            mode: codeMode,
+            language: codeLanguage,
+            snippet: code.substring(0, 200) + (code.length > 200 ? '...' : ''),
+            reply: data.reply,
+            timestamp: new Date().toISOString()
+          }
+          setCodeAssistantHistory(prev => [historyEntry, ...prev].slice(0, 5))
+
+          // Add notification
+          addNotification({
+            type: 'ai',
+            title: `Code ${codeMode} Complete`,
+            message: `Analyzed ${codeLanguage} code - ${codeMode}`
+          })
         }
       } catch (error) {
         console.error('Error fetching AI response:', error)
-        const errorResponse = { id: Date.now() + 1, role: 'assistant', content: "Sorry, I'm having trouble connecting to the AI Mentor. Please try again later." }
+        const errorResponse = {
+          id: Date.now() + 1,
+          role: 'assistant',
+          content: "Sorry, I'm having trouble connecting to the AI Mentor. Please try again later."
+        }
         setChatHistory(prev => [...prev, errorResponse])
       }
     }
@@ -75,6 +125,58 @@ function CodeAssistant() {
             <h3>Editor</h3>
           </div>
           <div className="card-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Mode and Language Selectors */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>Code Mode</label>
+                <select
+                  value={codeMode}
+                  onChange={(e) => setCodeMode(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '10px 12px',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <option value="Explain Code">Explain Code</option>
+                  <option value="Debug Code">Debug Code</option>
+                  <option value="Optimize Code">Optimize Code</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>Language</label>
+                <select
+                  value={codeLanguage}
+                  onChange={(e) => setCodeLanguage(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '10px 12px',
+                    color: 'var(--text-primary)',
+                    outline: 'none',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <option value="Python">Python</option>
+                  <option value="JavaScript">JavaScript</option>
+                  <option value="Java">Java</option>
+                  <option value="C++">C++</option>
+                  <option value="SQL">SQL</option>
+                </select>
+              </div>
+            </div>
+
             <textarea
               className="form-group"
               style={{
@@ -95,14 +197,11 @@ function CodeAssistant() {
               placeholder="Paste your code here..."
             />
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button className="action-btn" onClick={() => handleAction('Explain Code')}>
-                <MessageSquare size={16} /> Explain
+              <button className="action-btn" onClick={handleAction}>
+                <MessageSquare size={16} /> Analyze
               </button>
-              <button className="action-btn" onClick={() => handleAction('Fix Error')}>
-                <Bug size={16} /> Fix Error
-              </button>
-              <button className="action-btn secondary" onClick={() => handleAction('Optimize Code')}>
-                <Sparkles size={16} /> Optimize
+              <button className="action-btn secondary" onClick={() => setCode('')}>
+                <Code2 size={16} /> Clear
               </button>
             </div>
           </div>
