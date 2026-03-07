@@ -37,13 +37,13 @@ def create_app(config=None):
 
     # Register blueprints
     from app.routes import main, auth_routes, productivity_routes, learning_routes
-    from ai_mentor.ai_router import ai_router
+    from ai_mentor.ai_router import ai_bp
 
     app.register_blueprint(main)
     app.register_blueprint(auth_routes)
     app.register_blueprint(productivity_routes)
     app.register_blueprint(learning_routes)
-    app.register_blueprint(ai_router)
+    app.register_blueprint(ai_bp, url_prefix="/api/ai")
 
     # Register error handlers
     register_error_handlers(app)

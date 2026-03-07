@@ -12,11 +12,13 @@ import json
 import sys
 from run import create_app
 from config import get_config
+from ai_mentor.ai_router import ai_bp
 
 def test_app_creation():
     """Test that the Flask app can be created."""
     try:
         app = create_app()
+        app.register_blueprint(ai_bp, url_prefix="/api/ai")
         print("✅ Flask app created successfully")
         return app
     except Exception as e:
