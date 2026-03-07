@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from .mentor_service import mentor_service
 
-ai_router = Blueprint('ai_mentor', __name__, url_prefix='/api/ai')
+ai_bp = Blueprint('ai_mentor', __name__)
 
-@ai_router.route('/mentor', methods=['POST'])
+@ai_bp.route('/mentor', methods=['POST'])
 def mentor():
     """
     Handle user requests for the AI Mentor.

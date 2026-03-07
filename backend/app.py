@@ -10,10 +10,16 @@ This is the main Flask application server. It initializes the Flask app with:
 
 from run import create_app
 from config import get_config
+from ai_mentor.ai_router import ai_bp
 
 if __name__ == '__main__':
     # Create Flask app
     app = create_app()
+
+    # AI Mentor Registration
+    if 'ai_mentor' not in app.blueprints:
+        app.register_blueprint(ai_bp, url_prefix="/api/ai")
+
     config = get_config()
     port = config.PORT
     host = config.HOST
