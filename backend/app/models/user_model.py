@@ -16,7 +16,8 @@ class User(Base):
     last_name = Column(String(100))
     is_verified = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
-    
+    role = Column(String(20), default='user')  # user, admin
+
     # Learning preferences
     skill_level = Column(String(50), default='beginner')  # beginner, intermediate, advanced
     learning_track = Column(String(100), default='backend')  # backend, frontend, ai, fullstack
@@ -42,6 +43,7 @@ class User(Base):
             'last_name': self.last_name,
             'is_verified': self.is_verified,
             'is_active': self.is_active,
+            'role': self.role,
             'skill_level': self.skill_level,
             'learning_track': self.learning_track,
             'avatar_url': self.avatar_url,

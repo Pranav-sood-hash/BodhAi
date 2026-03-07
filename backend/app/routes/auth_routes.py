@@ -95,14 +95,17 @@ def login():
             return error_response('validation_error', 'Email and password are required', 422)
         
         # Mock response - in production, would verify credentials
+        user_role = 'admin' if email == 'admin@bodhai.com' else 'user'
+
         return success_response({
-            'access_token': generate_access_token('mock-user-id', email),
-            'refresh_token': generate_refresh_token('mock-user-id', email),
+            'access_token': generate_access_token('mock-user-id', email, user_role),
+            'refresh_token': generate_refresh_token('mock-user-id', email, user_role),
             'user': {
                 'id': 'mock-user-id',
                 'email': email,
                 'first_name': 'John',
-                'learning_track': 'backend'
+                'learning_track': 'backend',
+                'role': user_role
             }
         }, 'Login successful', 200)
     
@@ -253,7 +256,7 @@ def refresh_token():
         
         # Mock response - in production, would verify refresh token
         return success_response({
-            'access_token': generate_access_token('mock-user-id', 'user@example.com')
+            'access_token': generate_access_token('mock-user-id', 'user@example.com', 'user')
         }, 'Token refreshed successfully', 200)
     
     except Exception as e:
@@ -266,10 +269,11 @@ def refresh_token():
 def get_profile():
     """Get current user profile."""
     try:
-        # User info is available via request.user_id and request.user_email
+        # User info is available via request.user_id, request.user_email and request.user_role
         return success_response({
             'id': request.user_id,
             'email': request.user_email,
+            'role': request.user_role,
             'first_name': 'John',
             'last_name': 'Doe',
             'skill_level': 'beginner',

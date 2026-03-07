@@ -35,7 +35,7 @@ const Login = () => {
       if (response.ok) {
         // Store admin data in localStorage
         localStorage.setItem('user', JSON.stringify(data.user))
-        localStorage.setItem('adminToken', data.token)
+        localStorage.setItem('token', data.token)
         navigate('/')
       } else {
         setError(data.error || 'Admin login failed. Please try again.')
@@ -70,6 +70,10 @@ const Login = () => {
   }
 
   const handleSubmit = (e) => {
+    // Clear previous auth data before logging in
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+
     if (isAdminLogin) {
       handleAdminLogin(e)
     } else {

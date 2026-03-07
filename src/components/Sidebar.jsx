@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   BookOpen,
@@ -8,6 +8,7 @@ import {
   CalendarCheck,
   Settings,
   Brain,
+  ShieldAlert,
   X,
 } from "lucide-react";
 
@@ -25,6 +26,23 @@ const navItems = [
 ];
 
 function Sidebar({ isOpen, onClose }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      try {
+        const user = JSON.parse(userString);
+        setIsAdmin(user.role === 'admin');
+      } catch (e) {
+        setIsAdmin(false);
+      }
+    } else {
+      setIsAdmin(false);
+    }
+  }, [location.pathname, isOpen]);
+
   return (
     <>
       {isOpen && (
@@ -60,6 +78,19 @@ function Sidebar({ isOpen, onClose }) {
               </NavLink>
             );
           })}
+
+          {isAdmin && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `nav-item admin-nav ${isActive ? "active" : ""}`
+              }
+              onClick={onClose}
+            >
+              <ShieldAlert size={20} />
+              <span>Admin Panel</span>
+            </NavLink>
+          )}
         </nav>
 
         <div className="sidebar-footer">

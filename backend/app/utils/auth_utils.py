@@ -36,20 +36,22 @@ def verify_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
 
 
-def generate_access_token(user_id: str, user_email: str) -> str:
+def generate_access_token(user_id: str, user_email: str, user_role: str = 'user') -> str:
     """
     Generate a JWT access token.
-    
+
     Args:
         user_id: User ID
         user_email: User email
-    
+        user_role: User role
+
     Returns:
         JWT token string
     """
     payload = {
         'user_id': user_id,
         'email': user_email,
+        'role': user_role,
         'iat': datetime.utcnow(),
         'exp': datetime.utcnow() + timedelta(seconds=Config.JWT_ACCESS_TOKEN_EXPIRES)
     }
@@ -63,20 +65,22 @@ def generate_access_token(user_id: str, user_email: str) -> str:
     return token
 
 
-def generate_refresh_token(user_id: str, user_email: str) -> str:
+def generate_refresh_token(user_id: str, user_email: str, user_role: str = 'user') -> str:
     """
     Generate a JWT refresh token.
-    
+
     Args:
         user_id: User ID
         user_email: User email
-    
+        user_role: User role
+
     Returns:
         JWT refresh token string
     """
     payload = {
         'user_id': user_id,
         'email': user_email,
+        'role': user_role,
         'type': 'refresh',
         'iat': datetime.utcnow(),
         'exp': datetime.utcnow() + timedelta(seconds=Config.JWT_REFRESH_TOKEN_EXPIRES)
@@ -147,7 +151,8 @@ def require_auth(f):
         # Add user info to request context
         request.user_id = payload.get('user_id')
         request.user_email = payload.get('email')
-        
+        request.user_role = payload.get('role', 'user')
+
         return f(*args, **kwargs)
     
     return decorated_function
@@ -188,7 +193,8 @@ def get_user_from_token(token: str) -> Optional[Dict]:
     if is_valid and payload:
         return {
             'user_id': payload.get('user_id'),
-            'email': payload.get('email')
+            'email': payload.get('email'),
+            'role': payload.get('role', 'user')
         }
     
     return None

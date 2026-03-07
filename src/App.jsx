@@ -22,6 +22,7 @@ import CodeAssistant from './pages/CodeAssistant'
 import ProductivityPlanner from './pages/ProductivityPlanner'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import AdminDashboard from './pages/AdminDashboard'
 
 import './styles/App.css'
 
@@ -126,6 +127,14 @@ function App() {
           <ProtectedRoute>
             <MainLayout>
               <Settings />
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <AdminDashboard />
             </MainLayout>
           </ProtectedRoute>
         } />

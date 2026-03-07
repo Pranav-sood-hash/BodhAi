@@ -27,6 +27,8 @@ from .otp_utils import (
     validate_password_strength
 )
 
+from .admin_guard import admin_guard
+
 __all__ = [
     'success_response',
     'error_response',
@@ -47,5 +49,6 @@ __all__ = [
     'get_otp_expiry_time',
     'is_otp_valid',
     'validate_email_format',
-    'validate_password_strength'
+    'validate_password_strength',
+    'admin_guard'
 ]

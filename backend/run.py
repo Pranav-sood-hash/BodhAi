@@ -36,13 +36,14 @@ def create_app(config=None):
         print(f"Warning: Could not initialize database: {e}")
 
     # Register blueprints
-    from app.routes import main, auth_routes, productivity_routes, learning_routes
+    from app.routes import main, auth_routes, productivity_routes, learning_routes, admin_routes
     from ai_mentor.ai_router import ai_bp
 
     app.register_blueprint(main)
     app.register_blueprint(auth_routes)
     app.register_blueprint(productivity_routes)
     app.register_blueprint(learning_routes)
+    app.register_blueprint(admin_routes)
     app.register_blueprint(ai_bp, url_prefix="/api/ai")
 
     # Register error handlers
