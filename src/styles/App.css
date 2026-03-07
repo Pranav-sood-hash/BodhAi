@@ -771,6 +771,20 @@ body {
   display: none;
 }
 
+/* Show mobile-only elements on mobile and tablet */
+@media (max-width: 1023px) {
+  .mobile-only {
+    display: block !important;
+  }
+}
+
+/* Explicitly hide mobile-only elements on desktop */
+@media (min-width: 1024px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
 .ai-panel-header {
   display: flex;
   align-items: center;
