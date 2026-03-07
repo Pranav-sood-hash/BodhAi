@@ -45,7 +45,7 @@ class Config:
     OTP_LENGTH = int(os.getenv('OTP_LENGTH', 6))
     
     # Server Configuration
-    PORT = int(os.getenv('PORT', 5001))
+    PORT = int(os.getenv('PORT', 5000))
     HOST = os.getenv('HOST', '0.0.0.0')
 
 
