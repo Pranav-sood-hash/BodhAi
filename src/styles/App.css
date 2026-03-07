@@ -764,7 +764,6 @@ body {
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mobile-only {
@@ -1897,6 +1896,91 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.2);
   text-align: center;
   margin-bottom: 16px;
+}
+
+/* Resizable Split Layout */
+.main-layout-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.main-layout-container.desktop {
+  flex-direction: row;
+}
+
+.main-layout-container.mobile {
+  flex-direction: column;
+}
+
+.dashboard-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ai-mentor-panel-container {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ai-mentor-panel-container .ai-panel {
+  height: 100%;
+  border-radius: 0;
+}
+
+.resize-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: rgba(139, 92, 246, 0.1);
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.resize-divider:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.resize-divider.dragging {
+  background: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+/* Mobile layout - AI mentor as overlay */
+@media (max-width: 1023px) {
+  .main-layout-container.mobile {
+    overflow: hidden;
+  }
+
+  .ai-panel {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    animation: slideUp 0.3s ease;
+    z-index: 999;
+  }
+
+  .ai-panel.show {
+    display: flex;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Scrollbar */

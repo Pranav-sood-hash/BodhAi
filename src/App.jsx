@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import AIMentorChat from './components/AIMentorChat'
+import ResizableLayout from './components/ResizableLayout'
 
 // Auth Components
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -51,9 +52,13 @@ function MainLayout({ children }) {
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         />
-        {children}
+        <ResizableLayout
+          isAiPanelOpen={isAiPanelOpen}
+          aiMentorPanel={<AIMentorChat isOpen={isAiPanelOpen} onClose={() => setIsAiPanelOpen(false)} />}
+        >
+          {children}
+        </ResizableLayout>
       </main>
-      <AIMentorChat isOpen={isAiPanelOpen} onClose={() => setIsAiPanelOpen(false)} />
     </div>
   )
 }
