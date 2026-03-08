@@ -38,7 +38,7 @@ class Config:
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '')
     
     # Bedrock Configuration
-    BEDROCK_MODEL_ID = os.getenv('BEDROCK_MODEL_ID', 'anthropic.claude-3-sonnet-20240229-v1:0')
+    BEDROCK_MODEL_ID = os.getenv('BEDROCK_MODEL_ID', 'anthropic.claude-3-haiku-20240307-v1:0')
     
     # OTP Configuration
     OTP_EXPIRY_TIME = int(os.getenv('OTP_EXPIRY_TIME', 600))  # 10 minutes

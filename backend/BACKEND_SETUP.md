@@ -8,7 +8,7 @@ The BodhAI backend is a Flask-based Python application that serves as the API se
 - Learning progress tracking
 - Task management and productivity planning
 - AI mentor responses via the `/api/ai/mentor` endpoint
-- Bedrock AI integration (placeholder for future integration)
+- Amazon Bedrock integration with Claude 3 Haiku AI model
 
 ## Architecture
 
@@ -127,14 +127,13 @@ EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
 
-# AWS Configuration (for Bedrock)
+# AWS Configuration (for Bedrock - Claude 3 Haiku)
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
 
-# Bedrock Configuration
-BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
-USE_BEDROCK=false  # Set to true when ready to use Bedrock
+# Bedrock Configuration (uses Claude 3 Haiku model)
+BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
 
 # OTP Configuration
 OTP_EXPIRY_TIME=600
@@ -400,8 +399,7 @@ pip install -r requirements.txt
 
 ## Future Enhancements
 
-1. **Bedrock Integration** - Replace mock responses with real AWS Bedrock calls
-2. **Database Persistence** - Implement real database storage for users, tasks, and progress
+1. **Database Persistence** - Implement real database storage for users, tasks, and progress
 3. **Authentication** - Implement proper JWT-based authentication
 4. **Email Service** - Integrate real email sending for OTP verification
 5. **Caching** - Add Redis caching for performance

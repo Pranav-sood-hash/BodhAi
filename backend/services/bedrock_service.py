@@ -44,7 +44,7 @@ def generate_bedrock_response(prompt):
             "top_p": 0.9,
         })
 
-        model_id = "anthropic.claude-v2"
+        model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         
         response = bedrock.invoke_model(
             body=body,
