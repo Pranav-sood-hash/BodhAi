@@ -100,8 +100,12 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Sidebar */
@@ -135,7 +139,9 @@ body {
   display: flex;
   flex-direction: column;
   padding: 24px 16px;
-  transition: transform 0.3s ease, width 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
 }
 
 .logo-section {
@@ -515,6 +521,7 @@ body {
   mask-composite: exclude;
   opacity: 0.6;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .gradient-border:hover::before {
@@ -615,7 +622,7 @@ body {
   color: white;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.2s ease;
   box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
 }
@@ -1187,7 +1194,7 @@ body {
   border-radius: var(--radius-md);
   color: #f87171;
   font-size: 14px;
-  marginBottom: 1.5rem;
+  marginbottom: 1.5rem;
   text-align: center;
 }
 
@@ -1324,7 +1331,7 @@ body {
 .settings-avatar {
   width: 80px;
   height: 80px;
-  borderRadius: 50%;
+  borderradius: 50%;
   background: var(--bg-secondary);
   border: 2px solid var(--accent-purple);
 }
@@ -1470,18 +1477,22 @@ body {
   margin-bottom: 24px;
 }
 
-.data-title, .account-title {
+.data-title,
+.account-title {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 12px;
 }
 
-.data-actions, .account-actions {
+.data-actions,
+.account-actions {
   display: flex;
   gap: 10px;
 }
 
-.data-btn, .logout-btn, .delete-btn {
+.data-btn,
+.logout-btn,
+.delete-btn {
   flex: 1;
 }
 
@@ -1511,7 +1522,10 @@ body {
     flex-direction: column;
   }
 
-  .data-actions, .account-actions, .theme-options, .security-actions {
+  .data-actions,
+  .account-actions,
+  .theme-options,
+  .security-actions {
     flex-direction: column;
   }
 }
@@ -1636,7 +1650,9 @@ body {
   flex-wrap: wrap;
 }
 
-.priority-tag, .date-tag, .time-tag {
+.priority-tag,
+.date-tag,
+.time-tag {
   font-size: 10px;
   padding: 2px 6px;
 }
@@ -1678,12 +1694,14 @@ body {
   height: calc(100vh - 200px);
 }
 
-.editor-card, .response-card {
+.editor-card,
+.response-card {
   display: flex;
   flex-direction: column;
 }
 
-.editor-content, .response-content {
+.editor-content,
+.response-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1721,6 +1739,10 @@ body {
   transition: all 0.2s ease;
 }
 
+.selector-select option {
+  background: #1e1e2f;
+  color: white;
+}
 .code-textarea {
   flex: 1;
   width: 100%;
