@@ -32,10 +32,61 @@ def create_app(config=None):
 
         # Create tables if they don't exist
         create_tables(engine)
+
+        # Seed database with sample data
+        seed_db(SessionLocal)
     except Exception as e:
         print(f"Warning: Could not initialize database: {e}")
 
-    # Register blueprints
+def seed_db(SessionLocal):
+    """Seed the database with sample data if it's empty."""
+    from app.models.user_model import User
+    from app.models.learning_model import Roadmap, RoadmapPhase, Topic
+    import uuid
+
+    session = SessionLocal()
+
+    # Check if admin user exists
+    admin_email = 'admin@bodhai.com'
+    admin = session.query(User).filter_by(email=admin_email).first()
+    if not admin:
+        print(f"Creating seed admin user: {admin_email}")
+        admin = User(
+            id='mock-user-id',
+            email=admin_email,
+            password_hash='pbkdf2:sha256:260000$...',
+            first_name='Admin',
+            last_name='User',
+            role='admin',
+            is_verified=True
+        )
+        session.add(admin)
+
+    # Check if roadmaps exist
+    if session.query(Roadmap).count() == 0:
+        print("Creating seed roadmaps...")
+        # Python Fundamentals Roadmap
+        python_roadmap = Roadmap(
+            id=str(uuid.uuid4()),
+            title="Python Fundamentals",
+            description="Master the basics of Python programming, from variables to object-oriented programming.",
+            level="Beginner",
+            duration="12 hours",
+            track="backend",
+            is_custom=False
+        )
+        session.add(python_roadmap)
+
+        p1 = RoadmapPhase(id=str(uuid.uuid4()), roadmap=python_roadmap, title="Foundations", order=1)
+        session.add(p1)
+
+        t1 = Topic(id=str(uuid.uuid4()), phase=p1, title="Syntax & Basics", description="Learn variables and loops.", order=1, estimated_time="1 hour")
+        session.add(t1)
+
+    session.commit()
+    session.close()
+
+def register_error_handlers(app):
     from app.routes import main, auth_routes, productivity_routes, learning_routes, admin_routes
     from ai_mentor.ai_router import ai_bp
 

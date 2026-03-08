@@ -57,7 +57,12 @@ function Dashboard() {
     const fetchLearningStats = async () => {
       try {
         setIsStatsLoading(true)
-        const res = await fetch('/api/learning/dashboard')
+        const token = localStorage.getItem('token')
+        const res = await fetch('/api/learning/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
         if (res.ok) {
           const data = await res.json()
           setLearningStats(data.data)
@@ -184,10 +189,12 @@ function Dashboard() {
     setResponse('')
 
     try {
+      const token = localStorage.getItem('token')
       const res = await fetch('/api/ai/mentor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           mode: "learn",

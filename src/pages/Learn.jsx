@@ -129,7 +129,12 @@ function Learn() {
   const fetchRoadmaps = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch('/api/learning/roadmaps')
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/learning/roadmaps', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         setRoadmaps(data.data || [])
@@ -151,9 +156,13 @@ function Learn() {
 
   const handleGenerate = async (formData) => {
     try {
+      const token = localStorage.getItem('token')
       const res = await fetch('/api/learning/roadmaps/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(formData)
       })
       if (res.ok) {

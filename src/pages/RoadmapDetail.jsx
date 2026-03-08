@@ -83,7 +83,12 @@ function RoadmapDetail() {
   const fetchRoadmap = async () => {
     try {
       setIsLoading(true)
-      const res = await fetch(`/api/learning/roadmap/${id}`)
+      const token = localStorage.getItem('token')
+      const res = await fetch(`/api/learning/roadmap/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         setRoadmap(data.data)
@@ -104,18 +109,22 @@ function RoadmapDetail() {
 
   const handleToggleComplete = async (topicId, completed) => {
     try {
+      const token = localStorage.getItem('token')
       const res = await fetch('/api/learning/progress', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ topic_id: topicId, completed })
       })
-      
+
       if (res.ok) {
         // Update local state
         setRoadmap(prev => {
           const newPhases = prev.phases.map(phase => ({
             ...phase,
-            topics: phase.topics.map(topic => 
+            topics: phase.topics.map(topic =>
               topic.id === topicId ? { ...topic, completed } : topic
             )
           }))

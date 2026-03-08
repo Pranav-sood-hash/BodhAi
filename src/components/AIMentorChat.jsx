@@ -75,10 +75,12 @@ function AIMentorChat({ isOpen, onClose }) {
     }
 
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch('/api/ai/mentor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           mode,

@@ -10,74 +10,39 @@ const Login = () => {
   const [isAdminLogin, setIsAdminLogin] = useState(false)
   const navigate = useNavigate()
 
-  const handleAdminLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
 
-    try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+    // Clear previous auth data before logging in
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
 
-      const response = await fetch('/api/admin-login', {
+    try {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        signal: controller.signal
       })
-
-      clearTimeout(timeoutId)
 
       const data = await response.json()
 
       if (response.ok) {
-        // Store admin data in localStorage
-        localStorage.setItem('user', JSON.stringify(data.user))
-        localStorage.setItem('token', data.token)
+        // Store data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.data.user))
+        localStorage.setItem('token', data.data.access_token)
         navigate('/')
       } else {
-        setError(data.error || 'Admin login failed. Please try again.')
+        setError(data.message || 'Login failed. Please try again.')
       }
     } catch (err) {
-      console.error('Admin login error:', err)
-      if (err.name === 'AbortError') {
-        setError('Request timeout. Please check your connection and try again.')
-      } else {
-        setError('Unable to connect to server. Please try again.')
-      }
+      console.error('Login error:', err)
+      setError('Unable to connect to server. Please try again.')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const handleLogin = (e) => {
-    e.preventDefault()
-    setError('')
-
-    // 1. Get user data from localStorage
-    const storedUser = JSON.parse(localStorage.getItem('user'))
-
-    // 2. Mock credentials check (Future Integration: AWS Cognito authenticate)
-    if (storedUser && email === storedUser.email && password === storedUser.password) {
-      // Login Success: Session already managed by having 'user' in localStorage
-      // In a real app, this would be a JWT token or session cookie from AWS Cognito
-      navigate('/')
-    } else {
-      setError('Invalid email or password. Please try again.')
-    }
-  }
-
-  const handleSubmit = (e) => {
-    // Clear previous auth data before logging in
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-
-    if (isAdminLogin) {
-      handleAdminLogin(e)
-    } else {
-      handleLogin(e)
     }
   }
 

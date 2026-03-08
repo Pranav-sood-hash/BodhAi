@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
     "frontend": "vite",
-    "backend": "node backend/server.cjs",
+    "backend": "python3 backend/run.py",
     "flask": "python3 backend/run.py",
     "build": "vite build",
     "preview": "vite preview"
